@@ -34,13 +34,15 @@ When person has many relationships
 **E.G**. `4:2,5,6,7;`
 
     Method: POST  
-    /api/find-celebrity 
+    /api/find-celebrity/process
     file=@file.csv
 
 *Second endpoint*
 
+Used to query result from database using process id
+
     Method: GET
-    /api/find-celebrity/{idProcess}
+    /api/find-celebrity/process/{idProcess}
     
   
 
