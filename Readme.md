@@ -4,7 +4,7 @@
 - Not necessary everyone know each others  
 - There may not be any celebrity
 
-## **Explanation solution**
+## **Solution Explanation**
 
 Used Stack method to solve problem.
 
@@ -12,7 +12,7 @@ Add all of people to stack, while stack contains two or more persons take two pe
 
 After that, when stack has only one person who is a possible celebrity, run validation asking all people if they know the possible celebrity, if they know then return celebrity otherwise return message "Not found celebrity"
 
-## **Explanation implementation**
+## **Implementation Explanation**
 Created a Rest service with two endpoints 
 
 ***First endpoint***
