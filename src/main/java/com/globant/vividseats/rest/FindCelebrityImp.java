@@ -1,6 +1,7 @@
 package com.globant.vividseats.rest;
 
 import com.globant.vividseats.exception.DataFormatException;
+import com.globant.vividseats.exception.FileEmptyException;
 import com.globant.vividseats.service.FindCelebrityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -23,7 +24,7 @@ public class FindCelebrityImp implements FindCelebrityRest {
 
     @Override
     @PostMapping(value = "/process")
-    public HttpEntity findCelebrityProcess(@RequestParam("file") MultipartFile file) throws IOException, DataFormatException {
+    public HttpEntity findCelebrityProcess(@RequestParam("file") MultipartFile file) throws IOException, DataFormatException, FileEmptyException {
         return findCelebrityService.process(file);
     }
 

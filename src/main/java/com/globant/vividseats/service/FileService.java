@@ -1,6 +1,7 @@
 package com.globant.vividseats.service;
 
 import com.globant.vividseats.exception.DataFormatException;
+import com.globant.vividseats.exception.FileEmptyException;
 import com.globant.vividseats.util.Constants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Service to manage all matters of files
+ * Service to manage all matters of files.
  */
 @Service
 public class FileService {
@@ -27,7 +28,7 @@ public class FileService {
     }
 
     /**
-     * Create file from MultipartFile sent from request, after validate if it is a correct file to process
+     * Create file from MultipartFile sent from request, after validate if it is a correct file to process.
      * @param multipartFile File from request
      * @return Local file create from multipartFile
      * @throws IOException
@@ -49,13 +50,13 @@ public class FileService {
     }
 
     /**
-     * Read data from local file, validate if data is correct to processed and finally add them to List
+     * Read data from local file, validate if data is correct to processed and finally add them to List.
      * @param file local file created from multipart
      * @return List of String with data to process
      * @throws IOException
      * @throws DataFormatException When line of file not matches with prescribed format
      */
-    public List<String> readData(File file) throws IOException, DataFormatException {
+    public List<String> readData(File file) throws IOException, DataFormatException, FileEmptyException {
         List<String> data = new ArrayList<>();
         BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
         String st;
@@ -67,6 +68,7 @@ public class FileService {
                 data.add(st);
             }
         }
+        if (data.isEmpty()) throw new FileEmptyException(file.getName());
         return data;
     }
 
@@ -80,7 +82,7 @@ public class FileService {
     }
 
     /**
-     * Return extension of file
+     * Return extension of file.
      * @param multipartFile file from request
      * @return extension of file
      */

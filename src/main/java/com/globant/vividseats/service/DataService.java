@@ -9,11 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.StreamSupport;
 
 
 /**
- * Service to manage all of date of application in operations like save, process and validate.
+ * Service to manage the repo operations like save, process and validate.
  */
 @Service
 public class DataService {
@@ -28,7 +27,7 @@ public class DataService {
     }
 
     /**
-     * Process each line of data and decompose line with data of person and their relations
+     * Process each line of data and decompose line with data of person and their relations.
      * @param data List of string from file
      * @param process current process
      */
@@ -47,7 +46,7 @@ public class DataService {
     }
 
     /**
-     * Save person on database
+     * Save person on database.
      * @param person
      * @return person after saved on database
      */
@@ -62,20 +61,23 @@ public class DataService {
      * @param process process in curse
      */
     private void validateData(Process process){
-        Iterable<Person> people = personRepository.findAll();
-        people.forEach(person -> {
-            Long[] idsKnown = person.getIdPersonKnow();
-            Arrays.stream(idsKnown).forEach(idKnown -> {
-                Optional<Person> optionalPerson = personRepository.findById(idKnown);
-                if (!optionalPerson.isPresent()){
-                    savePerson(new Person(idKnown, process.getId()));
-                }
+        Optional<List<Person>> optionalPeople = personRepository.findPeopleByProcess(process.getId());
+        if (optionalPeople.isPresent()){
+            List<Person> people = optionalPeople.get();
+            people.forEach(person -> {
+                Long[] idsKnown = person.getIdPersonKnow();
+                Arrays.stream(idsKnown).forEach(idKnown -> {
+                    Optional<Person> optionalPerson = personRepository.findPersonByIdAndProcess(idKnown, process.getId());
+                    if (!optionalPerson.isPresent()){
+                        savePerson(new Person(idKnown, process.getId()));
+                    }
+                });
             });
-        });
+        }
     }
 
     /**
-     * Create object with information about process
+     * Create object with information about process.
      * @param fileName name of file uses in process
      * @return Process with information
      */
@@ -88,7 +90,7 @@ public class DataService {
     }
 
     /**
-     * Return optional of Process from database
+     * Return optional of Process from database.
      * @param id process id
      * @return Optional of process
      */
@@ -98,7 +100,7 @@ public class DataService {
 
 
     /**
-     * Save process in database
+     * Save process in database.
      * @param process
      * @return process after save in database
      */
@@ -107,50 +109,13 @@ public class DataService {
     }
 
     /**
-     * Algorithm where search celebrity among people.
-     *
-     * Add all of people to a stack and compare two of them from top while stack contains more of one person,
-     * finally validate if all of people know possible celebrity to confirm as the celebrity
-     * @return Optional Person, when there is a celebrity, assign it to optional
+     * Get people from repository by process Id.
+     * @param processId
+     * @return
      */
-    public Optional<Person> whoIsCelebrity(){
-        Optional<Person> celebrity = Optional.empty();
-        Iterable<Person> people = personRepository.findAll();
-        Stack<Person> stack = new Stack<>();
-        people.forEach(stack::add);
-
-        while (stack.size() > 1){
-            Person personA = stack.pop();
-            Person personB = stack.pop();
-            Person possibleCelebrity = possibleCelebrity(personA, personB);
-            stack.push(possibleCelebrity);
-        }
-
-        Person possibleCelebrity = stack.pop();
-        boolean confirmation = StreamSupport.stream(people.spliterator(), false)
-                .allMatch(person -> {
-                    if (person != possibleCelebrity){
-                        return person.knows(possibleCelebrity);
-                    }
-                    return true;
-                });
-        if (confirmation){
-            celebrity = Optional.of(possibleCelebrity);
-        }
-        return celebrity;
+    public Optional<List<Person>> getPeopleByProcess(Long processId){
+        return personRepository.findPeopleByProcess(processId);
     }
 
-    /**
-     * Return possible Celebrity between two candidates
-     * @param personA First person of Stack
-     * @param personB Second person of stack
-     * @return PersonA when PersonA not knows PersonB else PersonB
-     */
-    private Person possibleCelebrity(Person personA, Person personB){
-        if (personA.knows(personB)){
-            return personB;
-        }else {
-            return personA;
-        }
-    }
+
 }

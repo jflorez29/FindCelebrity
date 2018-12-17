@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -13,6 +14,8 @@ import java.util.Arrays;
 @Setter
 public class Person implements Serializable {
     @Id
+    @GeneratedValue
+    private Long autoId;
     private Long id;
     private Long process;
     private Long[] idPersonKnow = {};

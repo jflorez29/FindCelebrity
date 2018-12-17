@@ -1,6 +1,7 @@
 package com.globant.vividseats.service;
 
 import com.globant.vividseats.exception.DataFormatException;
+import com.globant.vividseats.exception.FileEmptyException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,15 +53,22 @@ public class FileServiceTest {
         Assert.assertTrue(fileReturn.getName().contains("filename"));
     }
 
+    @Test(expected = FileEmptyException.class)
+    public void loadFile_whenMultipartIsCSVAndEmpty_throwsFileEmptyException() throws IOException, DataFormatException, FileEmptyException {
+        MockMultipartFile file = new MockMultipartFile("file", "filename.csv", "text/csv", "".getBytes());
+        File fileReturn = fileService.loadFile(file);
+        fileService.readData(fileReturn);
+    }
+
     @Test(expected = DataFormatException.class)
-    public void readData_WhenContainsBadLines() throws IOException, DataFormatException {
+    public void readData_WhenContainsBadLines() throws IOException, DataFormatException, FileEmptyException {
         MockMultipartFile file = new MockMultipartFile("file", "filename.csv", "text/csv", "4:2,5,6,7k;".getBytes());
         File fileReturn = fileService.loadFile(file);
         fileService.readData(fileReturn);
     }
 
     @Test
-    public void readData_WhenFormatInLinesIsCorrect() throws IOException, DataFormatException {
+    public void readData_WhenFormatInLinesIsCorrect() throws IOException, DataFormatException, FileEmptyException {
         MockMultipartFile file = new MockMultipartFile("file", "filename.csv", "text/csv", "4:2,5,6,7;".getBytes());
         File fileReturn = fileService.loadFile(file);
         List<String> list  = fileService.readData(fileReturn);
